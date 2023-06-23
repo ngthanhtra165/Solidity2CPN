@@ -1,0 +1,1836 @@
+AssetTransfer {
+
+/**************************
+ *** Colour Definitions ***
+ **************************/
+
+// DEFAULT COLORS DEFINITIONS
+type ADDRESS : range 0 .. 1000;
+type UINT : range 0 .. (int'last);
+type USER : struct { ADDRESS adr;UINT balance;};
+
+// SMARTCONTRACT COLORS DEFINITIONS
+type STATETYPE_ENUM : struct { UINT Active;UINT OfferPlaced;UINT PendingInspection;UINT Inspected;UINT Appraised;UINT NotionalAcceptance;UINT BuyerAccepted;UINT SellerAccepted;UINT Accepted;UINT Terminated;};
+type STRING : ;
+type UINT256 : range 0 .. (int'last);
+type ASSETTRANSFER_STATE : struct { STATETYPE_ENUM StateType;ADDRESS InstanceOwner;STRING Description;UINT AskingPrice;UINT State;ADDRESS InstanceBuyer;UINT OfferPrice;ADDRESS InstanceInspector;ADDRESS InstanceAppraiser;};
+type CONSTRUCTOR_PAR : struct { USER sender;UINT value;STRING description;UINT256 price;};
+type CONSTRUCTOR_STATE : struct { ASSETTRANSFER_STATE state;CONSTRUCTOR_PAR par;};
+type TERMINATE_PAR : struct { USER sender;UINT value;};
+type TERMINATE_STATE : struct { ASSETTRANSFER_STATE state;TERMINATE_PAR par;};
+type MODIFY_PAR : struct { USER sender;UINT value;STRING description;UINT256 price;};
+type MODIFY_STATE : struct { ASSETTRANSFER_STATE state;MODIFY_PAR par;};
+type MAKEOFFER_PAR : struct { USER sender;UINT value;ADDRESS inspector;ADDRESS appraiser;UINT256 offerPrice;};
+type MAKEOFFER_STATE : struct { ASSETTRANSFER_STATE state;MAKEOFFER_PAR par;};
+type ACCEPTOFFER_PAR : struct { USER sender;UINT value;};
+type ACCEPTOFFER_STATE : struct { ASSETTRANSFER_STATE state;ACCEPTOFFER_PAR par;};
+type REJECT_PAR : struct { USER sender;UINT value;};
+type REJECT_STATE : struct { ASSETTRANSFER_STATE state;REJECT_PAR par;};
+type ACCEPT_PAR : struct { USER sender;UINT value;};
+type ACCEPT_STATE : struct { ASSETTRANSFER_STATE state;ACCEPT_PAR par;};
+type MODIFYOFFER_PAR : struct { USER sender;UINT value;UINT256 offerPrice;};
+type MODIFYOFFER_STATE : struct { ASSETTRANSFER_STATE state;MODIFYOFFER_PAR par;};
+type RESCINDOFFER_PAR : struct { USER sender;UINT value;};
+type RESCINDOFFER_STATE : struct { ASSETTRANSFER_STATE state;RESCINDOFFER_PAR par;};
+type MARKAPPRAISED_PAR : struct { USER sender;UINT value;};
+type MARKAPPRAISED_STATE : struct { ASSETTRANSFER_STATE state;MARKAPPRAISED_PAR par;};
+type MARKINSPECTED_PAR : struct { USER sender;UINT value;};
+type MARKINSPECTED_STATE : struct { ASSETTRANSFER_STATE state;MARKINSPECTED_PAR par;};
+
+/****************************
+ *** Function Definitions ***
+ ****************************/
+
+/*************************
+ *** Place Definitions ***
+ *************************/
+
+/*
+ * function key
+ */
+place ASSETTRANSFER_FUNCKEY {
+	dom : epsilon;
+	init : epsilon;
+}
+
+/*
+ * block place
+ */
+place BLOCK_PLACE {
+	dom : epsilon;
+}
+
+/*
+ * Function: state
+ */
+place ASSETTRANSFER_S {
+	dom : ASSETTRANSFER_STATE;
+}
+place ASSETTRANSFER_SM {
+	dom : ASSETTRANSFER_STATE;
+	init : <({{0,1,2,3,4,5,6,7,8,9},0,0,0,0,0,0,0,0})>;
+}
+
+/*
+ * Function: constructor
+ */
+place P_CONSTRUCTOR {
+	dom : CONSTRUCTOR_PAR;
+}
+place 0CONSTRUCTOR_AS1 {
+	dom : CONSTRUCTOR_STATE;
+}
+place 0CONSTRUCTOR_AS2 {
+	dom : CONSTRUCTOR_STATE;
+}
+place 0CONSTRUCTOR_AS3 {
+	dom : CONSTRUCTOR_STATE;
+}
+place 0CONSTRUCTOR_AS4 {
+	dom : CONSTRUCTOR_STATE;
+}
+
+/*
+ * Function: Terminate
+ */
+place P_TERMINATE {
+	dom : TERMINATE_PAR;
+}
+place 0TERMINATE_INPUTV1 {
+	dom : TERMINATE_STATE;
+}
+place 0TERMINATE_EF1 {
+	dom : TERMINATE_STATE;
+}
+place 0TERMINATE_PT1 {
+	dom : TERMINATE_STATE;
+}
+place 0TERMINATE_PF1 {
+	dom : TERMINATE_STATE;
+}
+place 0TERMINATE_AS1 {
+	dom : TERMINATE_STATE;
+}
+
+/*
+ * Function: Modify
+ */
+place P_MODIFY {
+	dom : MODIFY_PAR;
+}
+place 0MODIFY_INPUTV1 {
+	dom : MODIFY_STATE;
+}
+place 0MODIFY_EF1 {
+	dom : MODIFY_STATE;
+}
+place 0MODIFY_PT1 {
+	dom : MODIFY_STATE;
+}
+place 0MODIFY_PF1 {
+	dom : MODIFY_STATE;
+}
+place 0MODIFY_EF2 {
+	dom : MODIFY_STATE;
+}
+place 0MODIFY_PT2 {
+	dom : MODIFY_STATE;
+}
+place 0MODIFY_PF2 {
+	dom : MODIFY_STATE;
+}
+place 0MODIFY_AS1 {
+	dom : MODIFY_STATE;
+}
+place 0MODIFY_AS2 {
+	dom : MODIFY_STATE;
+}
+
+/*
+ * Function: MakeOffer
+ */
+place P_MAKEOFFER {
+	dom : MAKEOFFER_PAR;
+}
+place 0MAKEOFFER_INPUTV1 {
+	dom : MAKEOFFER_STATE;
+}
+place 0MAKEOFFER_EF1 {
+	dom : MAKEOFFER_STATE;
+}
+place 0MAKEOFFER_PT1 {
+	dom : MAKEOFFER_STATE;
+}
+place 0MAKEOFFER_PF1 {
+	dom : MAKEOFFER_STATE;
+}
+place 0MAKEOFFER_EF2 {
+	dom : MAKEOFFER_STATE;
+}
+place 0MAKEOFFER_PT2 {
+	dom : MAKEOFFER_STATE;
+}
+place 0MAKEOFFER_PF2 {
+	dom : MAKEOFFER_STATE;
+}
+place 0MAKEOFFER_EF3 {
+	dom : MAKEOFFER_STATE;
+}
+place 0MAKEOFFER_PT3 {
+	dom : MAKEOFFER_STATE;
+}
+place 0MAKEOFFER_PF3 {
+	dom : MAKEOFFER_STATE;
+}
+place 0MAKEOFFER_AS1 {
+	dom : MAKEOFFER_STATE;
+}
+place 0MAKEOFFER_AS2 {
+	dom : MAKEOFFER_STATE;
+}
+place 0MAKEOFFER_AS3 {
+	dom : MAKEOFFER_STATE;
+}
+place 0MAKEOFFER_AS4 {
+	dom : MAKEOFFER_STATE;
+}
+place 0MAKEOFFER_AS5 {
+	dom : MAKEOFFER_STATE;
+}
+
+/*
+ * Function: AcceptOffer
+ */
+place P_ACCEPTOFFER {
+	dom : ACCEPTOFFER_PAR;
+}
+place 0ACCEPTOFFER_INPUTV1 {
+	dom : ACCEPTOFFER_STATE;
+}
+place 0ACCEPTOFFER_EF1 {
+	dom : ACCEPTOFFER_STATE;
+}
+place 0ACCEPTOFFER_PT1 {
+	dom : ACCEPTOFFER_STATE;
+}
+place 0ACCEPTOFFER_PF1 {
+	dom : ACCEPTOFFER_STATE;
+}
+place 0ACCEPTOFFER_EF2 {
+	dom : ACCEPTOFFER_STATE;
+}
+place 0ACCEPTOFFER_PT2 {
+	dom : ACCEPTOFFER_STATE;
+}
+place 0ACCEPTOFFER_PF2 {
+	dom : ACCEPTOFFER_STATE;
+}
+place 0ACCEPTOFFER_AS1 {
+	dom : ACCEPTOFFER_STATE;
+}
+
+/*
+ * Function: Reject
+ */
+place P_REJECT {
+	dom : REJECT_PAR;
+}
+place 0REJECT_INPUTV1 {
+	dom : REJECT_STATE;
+}
+place 0REJECT_EF1 {
+	dom : REJECT_STATE;
+}
+place 0REJECT_PT1 {
+	dom : REJECT_STATE;
+}
+place 0REJECT_PF1 {
+	dom : REJECT_STATE;
+}
+place 0REJECT_EF2 {
+	dom : REJECT_STATE;
+}
+place 0REJECT_PT2 {
+	dom : REJECT_STATE;
+}
+place 0REJECT_PF2 {
+	dom : REJECT_STATE;
+}
+place 0REJECT_AS1 {
+	dom : REJECT_STATE;
+}
+place 0REJECT_AS2 {
+	dom : REJECT_STATE;
+}
+
+/*
+ * Function: Accept
+ */
+place P_ACCEPT {
+	dom : ACCEPT_PAR;
+}
+place 0ACCEPT_INPUTV1 {
+	dom : ACCEPT_STATE;
+}
+place 0ACCEPT_EF1 {
+	dom : ACCEPT_STATE;
+}
+place 0ACCEPT_PT1 {
+	dom : ACCEPT_STATE;
+}
+place 0ACCEPT_PF1 {
+	dom : ACCEPT_STATE;
+}
+place 0ACCEPT_EF2 {
+	dom : ACCEPT_STATE;
+}
+place 0ACCEPT_PT2 {
+	dom : ACCEPT_STATE;
+}
+place 0ACCEPT_PF2 {
+	dom : ACCEPT_STATE;
+}
+place 0ACCEPT_EF3 {
+	dom : ACCEPT_STATE;
+}
+place 0ACCEPT_PT3 {
+	dom : ACCEPT_STATE;
+}
+place 0ACCEPT_PF3 {
+	dom : ACCEPT_STATE;
+}
+place 0ACCEPT_EF4 {
+	dom : ACCEPT_STATE;
+}
+place 0ACCEPT_PT4 {
+	dom : ACCEPT_STATE;
+}
+place 0ACCEPT_PF4 {
+	dom : ACCEPT_STATE;
+}
+place 0ACCEPT_EF5 {
+	dom : ACCEPT_STATE;
+}
+place 0ACCEPT_PT5 {
+	dom : ACCEPT_STATE;
+}
+place 0ACCEPT_PF5 {
+	dom : ACCEPT_STATE;
+}
+place 0ACCEPT_AS1 {
+	dom : ACCEPT_STATE;
+}
+place 0ACCEPT_PT6 {
+	dom : ACCEPT_STATE;
+}
+place 0ACCEPT_PF6 {
+	dom : ACCEPT_STATE;
+}
+place 0ACCEPT_AS2 {
+	dom : ACCEPT_STATE;
+}
+
+/*
+ * Function: ModifyOffer
+ */
+place P_MODIFYOFFER {
+	dom : MODIFYOFFER_PAR;
+}
+place 0MODIFYOFFER_INPUTV1 {
+	dom : MODIFYOFFER_STATE;
+}
+place 0MODIFYOFFER_EF1 {
+	dom : MODIFYOFFER_STATE;
+}
+place 0MODIFYOFFER_PT1 {
+	dom : MODIFYOFFER_STATE;
+}
+place 0MODIFYOFFER_PF1 {
+	dom : MODIFYOFFER_STATE;
+}
+place 0MODIFYOFFER_EF2 {
+	dom : MODIFYOFFER_STATE;
+}
+place 0MODIFYOFFER_PT2 {
+	dom : MODIFYOFFER_STATE;
+}
+place 0MODIFYOFFER_PF2 {
+	dom : MODIFYOFFER_STATE;
+}
+place 0MODIFYOFFER_AS1 {
+	dom : MODIFYOFFER_STATE;
+}
+
+/*
+ * Function: RescindOffer
+ */
+place P_RESCINDOFFER {
+	dom : RESCINDOFFER_PAR;
+}
+place 0RESCINDOFFER_INPUTV1 {
+	dom : RESCINDOFFER_STATE;
+}
+place 0RESCINDOFFER_EF1 {
+	dom : RESCINDOFFER_STATE;
+}
+place 0RESCINDOFFER_PT1 {
+	dom : RESCINDOFFER_STATE;
+}
+place 0RESCINDOFFER_PF1 {
+	dom : RESCINDOFFER_STATE;
+}
+place 0RESCINDOFFER_EF2 {
+	dom : RESCINDOFFER_STATE;
+}
+place 0RESCINDOFFER_PT2 {
+	dom : RESCINDOFFER_STATE;
+}
+place 0RESCINDOFFER_PF2 {
+	dom : RESCINDOFFER_STATE;
+}
+place 0RESCINDOFFER_AS1 {
+	dom : RESCINDOFFER_STATE;
+}
+place 0RESCINDOFFER_AS2 {
+	dom : RESCINDOFFER_STATE;
+}
+place 0RESCINDOFFER_AS3 {
+	dom : RESCINDOFFER_STATE;
+}
+
+/*
+ * Function: MarkAppraised
+ */
+place P_MARKAPPRAISED {
+	dom : MARKAPPRAISED_PAR;
+}
+place 0MARKAPPRAISED_INPUTV1 {
+	dom : MARKAPPRAISED_STATE;
+}
+place 0MARKAPPRAISED_EF1 {
+	dom : MARKAPPRAISED_STATE;
+}
+place 0MARKAPPRAISED_PT1 {
+	dom : MARKAPPRAISED_STATE;
+}
+place 0MARKAPPRAISED_PF1 {
+	dom : MARKAPPRAISED_STATE;
+}
+place 0MARKAPPRAISED_EF2 {
+	dom : MARKAPPRAISED_STATE;
+}
+place 0MARKAPPRAISED_PT2 {
+	dom : MARKAPPRAISED_STATE;
+}
+place 0MARKAPPRAISED_PF2 {
+	dom : MARKAPPRAISED_STATE;
+}
+place 0MARKAPPRAISED_AS1 {
+	dom : MARKAPPRAISED_STATE;
+}
+place 0MARKAPPRAISED_PT3 {
+	dom : MARKAPPRAISED_STATE;
+}
+place 0MARKAPPRAISED_PF3 {
+	dom : MARKAPPRAISED_STATE;
+}
+place 0MARKAPPRAISED_AS2 {
+	dom : MARKAPPRAISED_STATE;
+}
+
+/*
+ * Function: MarkInspected
+ */
+place P_MARKINSPECTED {
+	dom : MARKINSPECTED_PAR;
+}
+place 0MARKINSPECTED_INPUTV1 {
+	dom : MARKINSPECTED_STATE;
+}
+place 0MARKINSPECTED_EF1 {
+	dom : MARKINSPECTED_STATE;
+}
+place 0MARKINSPECTED_PT1 {
+	dom : MARKINSPECTED_STATE;
+}
+place 0MARKINSPECTED_PF1 {
+	dom : MARKINSPECTED_STATE;
+}
+place 0MARKINSPECTED_EF2 {
+	dom : MARKINSPECTED_STATE;
+}
+place 0MARKINSPECTED_PT2 {
+	dom : MARKINSPECTED_STATE;
+}
+place 0MARKINSPECTED_PF2 {
+	dom : MARKINSPECTED_STATE;
+}
+place 0MARKINSPECTED_AS1 {
+	dom : MARKINSPECTED_STATE;
+}
+place 0MARKINSPECTED_PT3 {
+	dom : MARKINSPECTED_STATE;
+}
+place 0MARKINSPECTED_PF3 {
+	dom : MARKINSPECTED_STATE;
+}
+place 0MARKINSPECTED_AS2 {
+	dom : MARKINSPECTED_STATE;
+}
+
+/******************************
+ *** Transition Definitions ***
+ ******************************/
+
+/*
+ * Function: constructor
+ */
+transition 0CONSTRUCTOR_as1 {
+	in {
+		P_CONSTRUCTOR : <(p)>;
+		ASSETTRANSFER_SM : <(s)>;
+	}
+	out {
+		0CONSTRUCTOR_AS1 : <({s_temp,p})>;
+	}
+	let {
+		ASSETTRANSFER_STATE s_temp := s :: (InstanceOwner := ADDRESS(p.sender.adr));
+	}
+}
+transition 0CONSTRUCTOR_as2 {
+	in {
+		0CONSTRUCTOR_AS1 : <(sp)>;
+	}
+	out {
+		0CONSTRUCTOR_AS2 : <(sp_temp)>;
+	}
+	let {
+		ASSETTRANSFER_STATE state_temp := sp.state :: (AskingPrice := UINT(sp.par.price));
+		CONSTRUCTOR_STATE sp_temp := sp :: (state := state_temp);
+	}
+}
+transition 0CONSTRUCTOR_as3 {
+	in {
+		0CONSTRUCTOR_AS2 : <(sp)>;
+	}
+	out {
+		0CONSTRUCTOR_AS3 : <(sp_temp)>;
+	}
+	let {
+		ASSETTRANSFER_STATE state_temp := sp.state :: (Description := STRING(sp.par.description));
+		CONSTRUCTOR_STATE sp_temp := sp :: (state := state_temp);
+	}
+}
+transition 0CONSTRUCTOR_as4 {
+	in {
+		0CONSTRUCTOR_AS3 : <(sp)>;
+	}
+	out {
+		0CONSTRUCTOR_AS4 : <(sp_temp)>;
+	}
+	let {
+		ASSETTRANSFER_STATE state_temp := sp.state :: (State := UINT(sp.state.StateType.Active));
+		CONSTRUCTOR_STATE sp_temp := sp :: (state := state_temp);
+	}
+}
+transition CONSTRUCTOR_endf {
+	in {
+		0CONSTRUCTOR_AS4 : <(sp)>;
+	}
+	out {
+		ASSETTRANSFER_S : <(sp.state)>;
+	}
+}
+
+/*
+ * Function: Terminate
+ */
+transition TERMINATE_InputD {
+	in {
+		ASSETTRANSFER_FUNCKEY : epsilon;
+		P_TERMINATE : <(p)>;
+		ASSETTRANSFER_S : <(s)>;
+	}
+	out {
+		0TERMINATE_INPUTV1 : <({s,p})>;
+		ASSETTRANSFER_FUNCKEY : epsilon;
+	}
+}
+transition 0TERMINATE_tT1 {
+	in {
+		0TERMINATE_INPUTV1 : <(sp)>;
+	}
+	out {
+		0TERMINATE_PT1 : <(sp)>;
+	}
+	guard : (sp.state.InstanceOwner) != (sp.par.sender.adr);
+}
+transition 0TERMINATE_e_revert1 {
+	in {
+		0TERMINATE_PT1 : <(sp)>;
+	}
+	out {
+		ASSETTRANSFER_S : <(sp.state)>;
+	}
+}
+transition 0TERMINATE_eD1 {
+	in {
+		BLOCK_PLACE : epsilon;
+	}
+	out {
+	}
+}
+transition 0TERMINATE_tF1 {
+	in {
+		0TERMINATE_INPUTV1 : <(sp)>;
+	}
+	out {
+		0TERMINATE_EF1 : <(sp)>;
+	}
+	guard : not((sp.state.InstanceOwner) != (sp.par.sender.adr));
+}
+transition 0TERMINATE_as1 {
+	in {
+		0TERMINATE_EF1 : <(sp)>;
+	}
+	out {
+		0TERMINATE_AS1 : <(sp_temp)>;
+	}
+	let {
+		ASSETTRANSFER_STATE state_temp := sp.state :: (State := UINT(sp.state.StateType.Terminated));
+		TERMINATE_STATE sp_temp := sp :: (state := state_temp);
+	}
+}
+transition TERMINATE_endf {
+	in {
+		0TERMINATE_AS1 : <(sp)>;
+	}
+	out {
+		ASSETTRANSFER_S : <(sp.state)>;
+	}
+}
+
+/*
+ * Function: Modify
+ */
+transition MODIFY_InputD {
+	in {
+		ASSETTRANSFER_FUNCKEY : epsilon;
+		P_MODIFY : <(p)>;
+		ASSETTRANSFER_S : <(s)>;
+	}
+	out {
+		0MODIFY_INPUTV1 : <({s,p})>;
+		ASSETTRANSFER_FUNCKEY : epsilon;
+	}
+}
+transition 0MODIFY_tT1 {
+	in {
+		0MODIFY_INPUTV1 : <(sp)>;
+	}
+	out {
+		0MODIFY_PT1 : <(sp)>;
+	}
+	guard : (sp.state.State) != (sp.state.StateType.Active);
+}
+transition 0MODIFY_e_revert1 {
+	in {
+		0MODIFY_PT1 : <(sp)>;
+	}
+	out {
+		ASSETTRANSFER_S : <(sp.state)>;
+	}
+}
+transition 0MODIFY_eD1 {
+	in {
+		BLOCK_PLACE : epsilon;
+	}
+	out {
+	}
+}
+transition 0MODIFY_tF1 {
+	in {
+		0MODIFY_INPUTV1 : <(sp)>;
+	}
+	out {
+		0MODIFY_EF1 : <(sp)>;
+	}
+	guard : not((sp.state.State) != (sp.state.StateType.Active));
+}
+transition 0MODIFY_tT2 {
+	in {
+		0MODIFY_EF1 : <(sp)>;
+	}
+	out {
+		0MODIFY_PT2 : <(sp)>;
+	}
+	guard : (sp.state.InstanceOwner) != (sp.par.sender.adr);
+}
+transition 0MODIFY_e_revert2 {
+	in {
+		0MODIFY_PT2 : <(sp)>;
+	}
+	out {
+		ASSETTRANSFER_S : <(sp.state)>;
+	}
+}
+transition 0MODIFY_eD2 {
+	in {
+		BLOCK_PLACE : epsilon;
+	}
+	out {
+	}
+}
+transition 0MODIFY_tF2 {
+	in {
+		0MODIFY_EF1 : <(sp)>;
+	}
+	out {
+		0MODIFY_EF2 : <(sp)>;
+	}
+	guard : not((sp.state.InstanceOwner) != (sp.par.sender.adr));
+}
+transition 0MODIFY_as1 {
+	in {
+		0MODIFY_EF2 : <(sp)>;
+	}
+	out {
+		0MODIFY_AS1 : <(sp_temp)>;
+	}
+	let {
+		ASSETTRANSFER_STATE state_temp := sp.state :: (Description := STRING(sp.par.description));
+		MODIFY_STATE sp_temp := sp :: (state := state_temp);
+	}
+}
+transition 0MODIFY_as2 {
+	in {
+		0MODIFY_AS1 : <(sp)>;
+	}
+	out {
+		0MODIFY_AS2 : <(sp_temp)>;
+	}
+	let {
+		ASSETTRANSFER_STATE state_temp := sp.state :: (AskingPrice := UINT(sp.par.price));
+		MODIFY_STATE sp_temp := sp :: (state := state_temp);
+	}
+}
+transition MODIFY_endf {
+	in {
+		0MODIFY_AS2 : <(sp)>;
+	}
+	out {
+		ASSETTRANSFER_S : <(sp.state)>;
+	}
+}
+
+/*
+ * Function: MakeOffer
+ */
+transition MAKEOFFER_InputD {
+	in {
+		ASSETTRANSFER_FUNCKEY : epsilon;
+		P_MAKEOFFER : <(p)>;
+		ASSETTRANSFER_S : <(s)>;
+	}
+	out {
+		0MAKEOFFER_INPUTV1 : <({s,p})>;
+		ASSETTRANSFER_FUNCKEY : epsilon;
+	}
+}
+transition 0MAKEOFFER_tT1 {
+	in {
+		0MAKEOFFER_INPUTV1 : <(sp)>;
+	}
+	out {
+		0MAKEOFFER_PT1 : <(sp)>;
+	}
+	guard : (((sp.par.inspector) = ()) or ((sp.par.appraiser) = ())) or ((sp.par.offerPrice) = ());
+}
+transition 0MAKEOFFER_e_revert1 {
+	in {
+		0MAKEOFFER_PT1 : <(sp)>;
+	}
+	out {
+		ASSETTRANSFER_S : <(sp.state)>;
+	}
+}
+transition 0MAKEOFFER_eD1 {
+	in {
+		BLOCK_PLACE : epsilon;
+	}
+	out {
+	}
+}
+transition 0MAKEOFFER_tF1 {
+	in {
+		0MAKEOFFER_INPUTV1 : <(sp)>;
+	}
+	out {
+		0MAKEOFFER_EF1 : <(sp)>;
+	}
+	guard : not((((sp.par.inspector) = ()) or ((sp.par.appraiser) = ())) or ((sp.par.offerPrice) = ()));
+}
+transition 0MAKEOFFER_tT2 {
+	in {
+		0MAKEOFFER_EF1 : <(sp)>;
+	}
+	out {
+		0MAKEOFFER_PT2 : <(sp)>;
+	}
+	guard : (sp.state.State) != (sp.state.StateType.Active);
+}
+transition 0MAKEOFFER_e_revert2 {
+	in {
+		0MAKEOFFER_PT2 : <(sp)>;
+	}
+	out {
+		ASSETTRANSFER_S : <(sp.state)>;
+	}
+}
+transition 0MAKEOFFER_eD2 {
+	in {
+		BLOCK_PLACE : epsilon;
+	}
+	out {
+	}
+}
+transition 0MAKEOFFER_tF2 {
+	in {
+		0MAKEOFFER_EF1 : <(sp)>;
+	}
+	out {
+		0MAKEOFFER_EF2 : <(sp)>;
+	}
+	guard : not((sp.state.State) != (sp.state.StateType.Active));
+}
+transition 0MAKEOFFER_tT3 {
+	in {
+		0MAKEOFFER_EF2 : <(sp)>;
+	}
+	out {
+		0MAKEOFFER_PT3 : <(sp)>;
+	}
+	guard : (sp.state.InstanceOwner) = (sp.par.sender.adr);
+}
+transition 0MAKEOFFER_e_revert3 {
+	in {
+		0MAKEOFFER_PT3 : <(sp)>;
+	}
+	out {
+		ASSETTRANSFER_S : <(sp.state)>;
+	}
+}
+transition 0MAKEOFFER_eD3 {
+	in {
+		BLOCK_PLACE : epsilon;
+	}
+	out {
+	}
+}
+transition 0MAKEOFFER_tF3 {
+	in {
+		0MAKEOFFER_EF2 : <(sp)>;
+	}
+	out {
+		0MAKEOFFER_EF3 : <(sp)>;
+	}
+	guard : not((sp.state.InstanceOwner) = (sp.par.sender.adr));
+}
+transition 0MAKEOFFER_as1 {
+	in {
+		0MAKEOFFER_EF3 : <(sp)>;
+	}
+	out {
+		0MAKEOFFER_AS1 : <(sp_temp)>;
+	}
+	let {
+		ASSETTRANSFER_STATE state_temp := sp.state :: (InstanceBuyer := ADDRESS(sp.par.sender.adr));
+		MAKEOFFER_STATE sp_temp := sp :: (state := state_temp);
+	}
+}
+transition 0MAKEOFFER_as2 {
+	in {
+		0MAKEOFFER_AS1 : <(sp)>;
+	}
+	out {
+		0MAKEOFFER_AS2 : <(sp_temp)>;
+	}
+	let {
+		ASSETTRANSFER_STATE state_temp := sp.state :: (InstanceInspector := ADDRESS(sp.par.inspector));
+		MAKEOFFER_STATE sp_temp := sp :: (state := state_temp);
+	}
+}
+transition 0MAKEOFFER_as3 {
+	in {
+		0MAKEOFFER_AS2 : <(sp)>;
+	}
+	out {
+		0MAKEOFFER_AS3 : <(sp_temp)>;
+	}
+	let {
+		ASSETTRANSFER_STATE state_temp := sp.state :: (InstanceAppraiser := ADDRESS(sp.par.appraiser));
+		MAKEOFFER_STATE sp_temp := sp :: (state := state_temp);
+	}
+}
+transition 0MAKEOFFER_as4 {
+	in {
+		0MAKEOFFER_AS3 : <(sp)>;
+	}
+	out {
+		0MAKEOFFER_AS4 : <(sp_temp)>;
+	}
+	let {
+		ASSETTRANSFER_STATE state_temp := sp.state :: (OfferPrice := UINT(sp.par.offerPrice));
+		MAKEOFFER_STATE sp_temp := sp :: (state := state_temp);
+	}
+}
+transition 0MAKEOFFER_as5 {
+	in {
+		0MAKEOFFER_AS4 : <(sp)>;
+	}
+	out {
+		0MAKEOFFER_AS5 : <(sp_temp)>;
+	}
+	let {
+		ASSETTRANSFER_STATE state_temp := sp.state :: (State := UINT(sp.state.StateType.OfferPlaced));
+		MAKEOFFER_STATE sp_temp := sp :: (state := state_temp);
+	}
+}
+transition MAKEOFFER_endf {
+	in {
+		0MAKEOFFER_AS5 : <(sp)>;
+	}
+	out {
+		ASSETTRANSFER_S : <(sp.state)>;
+	}
+}
+
+/*
+ * Function: AcceptOffer
+ */
+transition ACCEPTOFFER_InputD {
+	in {
+		ASSETTRANSFER_FUNCKEY : epsilon;
+		P_ACCEPTOFFER : <(p)>;
+		ASSETTRANSFER_S : <(s)>;
+	}
+	out {
+		0ACCEPTOFFER_INPUTV1 : <({s,p})>;
+		ASSETTRANSFER_FUNCKEY : epsilon;
+	}
+}
+transition 0ACCEPTOFFER_tT1 {
+	in {
+		0ACCEPTOFFER_INPUTV1 : <(sp)>;
+	}
+	out {
+		0ACCEPTOFFER_PT1 : <(sp)>;
+	}
+	guard : (sp.state.State) != (sp.state.StateType.OfferPlaced);
+}
+transition 0ACCEPTOFFER_e_revert1 {
+	in {
+		0ACCEPTOFFER_PT1 : <(sp)>;
+	}
+	out {
+		ASSETTRANSFER_S : <(sp.state)>;
+	}
+}
+transition 0ACCEPTOFFER_eD1 {
+	in {
+		BLOCK_PLACE : epsilon;
+	}
+	out {
+	}
+}
+transition 0ACCEPTOFFER_tF1 {
+	in {
+		0ACCEPTOFFER_INPUTV1 : <(sp)>;
+	}
+	out {
+		0ACCEPTOFFER_EF1 : <(sp)>;
+	}
+	guard : not((sp.state.State) != (sp.state.StateType.OfferPlaced));
+}
+transition 0ACCEPTOFFER_tT2 {
+	in {
+		0ACCEPTOFFER_EF1 : <(sp)>;
+	}
+	out {
+		0ACCEPTOFFER_PT2 : <(sp)>;
+	}
+	guard : (sp.state.InstanceOwner) != (sp.par.sender.adr);
+}
+transition 0ACCEPTOFFER_e_revert2 {
+	in {
+		0ACCEPTOFFER_PT2 : <(sp)>;
+	}
+	out {
+		ASSETTRANSFER_S : <(sp.state)>;
+	}
+}
+transition 0ACCEPTOFFER_eD2 {
+	in {
+		BLOCK_PLACE : epsilon;
+	}
+	out {
+	}
+}
+transition 0ACCEPTOFFER_tF2 {
+	in {
+		0ACCEPTOFFER_EF1 : <(sp)>;
+	}
+	out {
+		0ACCEPTOFFER_EF2 : <(sp)>;
+	}
+	guard : not((sp.state.InstanceOwner) != (sp.par.sender.adr));
+}
+transition 0ACCEPTOFFER_as1 {
+	in {
+		0ACCEPTOFFER_EF2 : <(sp)>;
+	}
+	out {
+		0ACCEPTOFFER_AS1 : <(sp_temp)>;
+	}
+	let {
+		ASSETTRANSFER_STATE state_temp := sp.state :: (State := UINT(sp.state.StateType.PendingInspection));
+		ACCEPTOFFER_STATE sp_temp := sp :: (state := state_temp);
+	}
+}
+transition ACCEPTOFFER_endf {
+	in {
+		0ACCEPTOFFER_AS1 : <(sp)>;
+	}
+	out {
+		ASSETTRANSFER_S : <(sp.state)>;
+	}
+}
+
+/*
+ * Function: Reject
+ */
+transition REJECT_InputD {
+	in {
+		ASSETTRANSFER_FUNCKEY : epsilon;
+		P_REJECT : <(p)>;
+		ASSETTRANSFER_S : <(s)>;
+	}
+	out {
+		0REJECT_INPUTV1 : <({s,p})>;
+		ASSETTRANSFER_FUNCKEY : epsilon;
+	}
+}
+transition 0REJECT_tT1 {
+	in {
+		0REJECT_INPUTV1 : <(sp)>;
+	}
+	out {
+		0REJECT_PT1 : <(sp)>;
+	}
+	guard : ((((((sp.state.State) != (sp.state.StateType.OfferPlaced)) and ((sp.state.State) != (sp.state.StateType.PendingInspection))) and ((sp.state.State) != (sp.state.StateType.Inspected))) and ((sp.state.State) != (sp.state.StateType.Appraised))) and ((sp.state.State) != (sp.state.StateType.NotionalAcceptance))) and ((sp.state.State) != (sp.state.StateType.BuyerAccepted));
+}
+transition 0REJECT_e_revert1 {
+	in {
+		0REJECT_PT1 : <(sp)>;
+	}
+	out {
+		ASSETTRANSFER_S : <(sp.state)>;
+	}
+}
+transition 0REJECT_eD1 {
+	in {
+		BLOCK_PLACE : epsilon;
+	}
+	out {
+	}
+}
+transition 0REJECT_tF1 {
+	in {
+		0REJECT_INPUTV1 : <(sp)>;
+	}
+	out {
+		0REJECT_EF1 : <(sp)>;
+	}
+	guard : not(((((((sp.state.State) != (sp.state.StateType.OfferPlaced)) and ((sp.state.State) != (sp.state.StateType.PendingInspection))) and ((sp.state.State) != (sp.state.StateType.Inspected))) and ((sp.state.State) != (sp.state.StateType.Appraised))) and ((sp.state.State) != (sp.state.StateType.NotionalAcceptance))) and ((sp.state.State) != (sp.state.StateType.BuyerAccepted)));
+}
+transition 0REJECT_tT2 {
+	in {
+		0REJECT_EF1 : <(sp)>;
+	}
+	out {
+		0REJECT_PT2 : <(sp)>;
+	}
+	guard : (sp.state.InstanceOwner) != (sp.par.sender.adr);
+}
+transition 0REJECT_e_revert2 {
+	in {
+		0REJECT_PT2 : <(sp)>;
+	}
+	out {
+		ASSETTRANSFER_S : <(sp.state)>;
+	}
+}
+transition 0REJECT_eD2 {
+	in {
+		BLOCK_PLACE : epsilon;
+	}
+	out {
+	}
+}
+transition 0REJECT_tF2 {
+	in {
+		0REJECT_EF1 : <(sp)>;
+	}
+	out {
+		0REJECT_EF2 : <(sp)>;
+	}
+	guard : not((sp.state.InstanceOwner) != (sp.par.sender.adr));
+}
+transition 0REJECT_as1 {
+	in {
+		0REJECT_EF2 : <(sp)>;
+	}
+	out {
+		0REJECT_AS1 : <(sp_temp)>;
+	}
+	let {
+		ASSETTRANSFER_STATE state_temp := sp.state :: (InstanceBuyer := ADDRESS());
+		REJECT_STATE sp_temp := sp :: (state := state_temp);
+	}
+}
+transition 0REJECT_as2 {
+	in {
+		0REJECT_AS1 : <(sp)>;
+	}
+	out {
+		0REJECT_AS2 : <(sp_temp)>;
+	}
+	let {
+		ASSETTRANSFER_STATE state_temp := sp.state :: (State := UINT(sp.state.StateType.Active));
+		REJECT_STATE sp_temp := sp :: (state := state_temp);
+	}
+}
+transition REJECT_endf {
+	in {
+		0REJECT_AS2 : <(sp)>;
+	}
+	out {
+		ASSETTRANSFER_S : <(sp.state)>;
+	}
+}
+
+/*
+ * Function: Accept
+ */
+transition ACCEPT_InputD {
+	in {
+		ASSETTRANSFER_FUNCKEY : epsilon;
+		P_ACCEPT : <(p)>;
+		ASSETTRANSFER_S : <(s)>;
+	}
+	out {
+		0ACCEPT_INPUTV1 : <({s,p})>;
+		ASSETTRANSFER_FUNCKEY : epsilon;
+	}
+}
+transition 0ACCEPT_tT1 {
+	in {
+		0ACCEPT_INPUTV1 : <(sp)>;
+	}
+	out {
+		0ACCEPT_PT1 : <(sp)>;
+	}
+	guard : ((sp.par.sender.adr) != (sp.state.InstanceBuyer)) and ((sp.par.sender.adr) != (sp.state.InstanceOwner));
+}
+transition 0ACCEPT_e_revert1 {
+	in {
+		0ACCEPT_PT1 : <(sp)>;
+	}
+	out {
+		ASSETTRANSFER_S : <(sp.state)>;
+	}
+}
+transition 0ACCEPT_eD1 {
+	in {
+		BLOCK_PLACE : epsilon;
+	}
+	out {
+	}
+}
+transition 0ACCEPT_tF1 {
+	in {
+		0ACCEPT_INPUTV1 : <(sp)>;
+	}
+	out {
+		0ACCEPT_EF1 : <(sp)>;
+	}
+	guard : not(((sp.par.sender.adr) != (sp.state.InstanceBuyer)) and ((sp.par.sender.adr) != (sp.state.InstanceOwner)));
+}
+transition 0ACCEPT_tT2 {
+	in {
+		0ACCEPT_EF1 : <(sp)>;
+	}
+	out {
+		0ACCEPT_PT2 : <(sp)>;
+	}
+	guard : (((sp.par.sender.adr) = (sp.state.InstanceOwner)) and ((sp.state.State) != (sp.state.StateType.NotionalAcceptance))) and ((sp.state.State) != (sp.state.StateType.BuyerAccepted));
+}
+transition 0ACCEPT_e_revert2 {
+	in {
+		0ACCEPT_PT2 : <(sp)>;
+	}
+	out {
+		ASSETTRANSFER_S : <(sp.state)>;
+	}
+}
+transition 0ACCEPT_eD2 {
+	in {
+		BLOCK_PLACE : epsilon;
+	}
+	out {
+	}
+}
+transition 0ACCEPT_tF2 {
+	in {
+		0ACCEPT_EF1 : <(sp)>;
+	}
+	out {
+		0ACCEPT_EF2 : <(sp)>;
+	}
+	guard : not((((sp.par.sender.adr) = (sp.state.InstanceOwner)) and ((sp.state.State) != (sp.state.StateType.NotionalAcceptance))) and ((sp.state.State) != (sp.state.StateType.BuyerAccepted)));
+}
+transition 0ACCEPT_tT3 {
+	in {
+		0ACCEPT_EF2 : <(sp)>;
+	}
+	out {
+		0ACCEPT_PT3 : <(sp)>;
+	}
+	guard : (((sp.par.sender.adr) = (sp.state.InstanceBuyer)) and ((sp.state.State) != (sp.state.StateType.NotionalAcceptance))) and ((sp.state.State) != (sp.state.StateType.SellerAccepted));
+}
+transition 0ACCEPT_e_revert3 {
+	in {
+		0ACCEPT_PT3 : <(sp)>;
+	}
+	out {
+		ASSETTRANSFER_S : <(sp.state)>;
+	}
+}
+transition 0ACCEPT_eD3 {
+	in {
+		BLOCK_PLACE : epsilon;
+	}
+	out {
+	}
+}
+transition 0ACCEPT_tF3 {
+	in {
+		0ACCEPT_EF2 : <(sp)>;
+	}
+	out {
+		0ACCEPT_EF3 : <(sp)>;
+	}
+	guard : not((((sp.par.sender.adr) = (sp.state.InstanceBuyer)) and ((sp.state.State) != (sp.state.StateType.NotionalAcceptance))) and ((sp.state.State) != (sp.state.StateType.SellerAccepted)));
+}
+transition 0ACCEPT_tT4 {
+	in {
+		0ACCEPT_EF3 : <(sp)>;
+	}
+	out {
+		0ACCEPT_PT4 : <(sp)>;
+	}
+	guard : (sp.par.sender.adr) = (sp.state.InstanceBuyer);
+}
+transition 0ACCEPT_tT5 {
+	in {
+		0ACCEPT_PT4 : <(sp)>;
+	}
+	out {
+		0ACCEPT_PT5 : <(sp)>;
+	}
+	guard : (sp.state.State) = (sp.state.StateType.NotionalAcceptance);
+}
+transition 0ACCEPT_as1 {
+	in {
+		0ACCEPT_PT5 : <(sp)>;
+	}
+	out {
+		0ACCEPT_AS1 : <(sp_temp)>;
+	}
+	let {
+		ASSETTRANSFER_STATE state_temp := sp.state :: (State := UINT(sp.state.StateType.BuyerAccepted));
+		ACCEPT_STATE sp_temp := sp :: (state := state_temp);
+	}
+}
+transition 0ACCEPT_eD4 {
+	in {
+		0ACCEPT_AS1 : <(sp)>;
+	}
+	out {
+		0ACCEPT_EF5 : <(sp)>;
+	}
+}
+transition 0ACCEPT_tF4 {
+	in {
+		0ACCEPT_PT4 : <(sp)>;
+	}
+	out {
+		0ACCEPT_PF5 : <(sp)>;
+	}
+	guard : not((sp.state.State) = (sp.state.StateType.NotionalAcceptance));
+}
+transition 0ACCEPT_tT6 {
+	in {
+		0ACCEPT_PF5 : <(sp)>;
+	}
+	out {
+		0ACCEPT_PT6 : <(sp)>;
+	}
+	guard : (sp.state.State) = (sp.state.StateType.SellerAccepted);
+}
+transition 0ACCEPT_as2 {
+	in {
+		0ACCEPT_PT6 : <(sp)>;
+	}
+	out {
+		0ACCEPT_AS2 : <(sp_temp)>;
+	}
+	let {
+		ASSETTRANSFER_STATE state_temp := sp.state :: (State := UINT(sp.state.StateType.Accepted));
+		ACCEPT_STATE sp_temp := sp :: (state := state_temp);
+	}
+}
+transition 0ACCEPT_eD5 {
+	in {
+		0ACCEPT_AS2 : <(sp)>;
+	}
+	out {
+		0ACCEPT_EF5 : <(sp)>;
+	}
+}
+transition 0ACCEPT_tF5 {
+	in {
+		0ACCEPT_PF5 : <(sp)>;
+	}
+	out {
+		0ACCEPT_EF5 : <(sp)>;
+	}
+	guard : not((sp.state.State) = (sp.state.StateType.SellerAccepted));
+}
+transition 0ACCEPT_eD6 {
+	in {
+		0ACCEPT_EF5 : <(sp)>;
+	}
+	out {
+		0ACCEPT_EF4 : <(sp)>;
+	}
+}
+transition 0ACCEPT_tF4 {
+	in {
+		0ACCEPT_EF3 : <(sp)>;
+	}
+	out {
+		0ACCEPT_PF4 : <(sp)>;
+	}
+	guard : not((sp.par.sender.adr) = (sp.state.InstanceBuyer));
+}
+transition ACCEPT_endf {
+	in {
+		0ACCEPT_EF4 : <(sp)>;
+	}
+	out {
+		ASSETTRANSFER_S : <(sp.state)>;
+	}
+}
+
+/*
+ * Function: ModifyOffer
+ */
+transition MODIFYOFFER_InputD {
+	in {
+		ASSETTRANSFER_FUNCKEY : epsilon;
+		P_MODIFYOFFER : <(p)>;
+		ASSETTRANSFER_S : <(s)>;
+	}
+	out {
+		0MODIFYOFFER_INPUTV1 : <({s,p})>;
+		ASSETTRANSFER_FUNCKEY : epsilon;
+	}
+}
+transition 0MODIFYOFFER_tT1 {
+	in {
+		0MODIFYOFFER_INPUTV1 : <(sp)>;
+	}
+	out {
+		0MODIFYOFFER_PT1 : <(sp)>;
+	}
+	guard : (sp.state.State) != (sp.state.StateType.OfferPlaced);
+}
+transition 0MODIFYOFFER_e_revert1 {
+	in {
+		0MODIFYOFFER_PT1 : <(sp)>;
+	}
+	out {
+		ASSETTRANSFER_S : <(sp.state)>;
+	}
+}
+transition 0MODIFYOFFER_eD1 {
+	in {
+		BLOCK_PLACE : epsilon;
+	}
+	out {
+	}
+}
+transition 0MODIFYOFFER_tF1 {
+	in {
+		0MODIFYOFFER_INPUTV1 : <(sp)>;
+	}
+	out {
+		0MODIFYOFFER_EF1 : <(sp)>;
+	}
+	guard : not((sp.state.State) != (sp.state.StateType.OfferPlaced));
+}
+transition 0MODIFYOFFER_tT2 {
+	in {
+		0MODIFYOFFER_EF1 : <(sp)>;
+	}
+	out {
+		0MODIFYOFFER_PT2 : <(sp)>;
+	}
+	guard : ((sp.state.InstanceBuyer) != (sp.par.sender.adr)) or ((sp.par.offerPrice) = ());
+}
+transition 0MODIFYOFFER_e_revert2 {
+	in {
+		0MODIFYOFFER_PT2 : <(sp)>;
+	}
+	out {
+		ASSETTRANSFER_S : <(sp.state)>;
+	}
+}
+transition 0MODIFYOFFER_eD2 {
+	in {
+		BLOCK_PLACE : epsilon;
+	}
+	out {
+	}
+}
+transition 0MODIFYOFFER_tF2 {
+	in {
+		0MODIFYOFFER_EF1 : <(sp)>;
+	}
+	out {
+		0MODIFYOFFER_EF2 : <(sp)>;
+	}
+	guard : not(((sp.state.InstanceBuyer) != (sp.par.sender.adr)) or ((sp.par.offerPrice) = ()));
+}
+transition 0MODIFYOFFER_as1 {
+	in {
+		0MODIFYOFFER_EF2 : <(sp)>;
+	}
+	out {
+		0MODIFYOFFER_AS1 : <(sp_temp)>;
+	}
+	let {
+		ASSETTRANSFER_STATE state_temp := sp.state :: (OfferPrice := UINT(sp.par.offerPrice));
+		MODIFYOFFER_STATE sp_temp := sp :: (state := state_temp);
+	}
+}
+transition MODIFYOFFER_endf {
+	in {
+		0MODIFYOFFER_AS1 : <(sp)>;
+	}
+	out {
+		ASSETTRANSFER_S : <(sp.state)>;
+	}
+}
+
+/*
+ * Function: RescindOffer
+ */
+transition RESCINDOFFER_InputD {
+	in {
+		ASSETTRANSFER_FUNCKEY : epsilon;
+		P_RESCINDOFFER : <(p)>;
+		ASSETTRANSFER_S : <(s)>;
+	}
+	out {
+		0RESCINDOFFER_INPUTV1 : <({s,p})>;
+		ASSETTRANSFER_FUNCKEY : epsilon;
+	}
+}
+transition 0RESCINDOFFER_tT1 {
+	in {
+		0RESCINDOFFER_INPUTV1 : <(sp)>;
+	}
+	out {
+		0RESCINDOFFER_PT1 : <(sp)>;
+	}
+	guard : ((((((sp.state.State) != (sp.state.StateType.OfferPlaced)) and ((sp.state.State) != (sp.state.StateType.PendingInspection))) and ((sp.state.State) != (sp.state.StateType.Inspected))) and ((sp.state.State) != (sp.state.StateType.Appraised))) and ((sp.state.State) != (sp.state.StateType.NotionalAcceptance))) and ((sp.state.State) != (sp.state.StateType.SellerAccepted));
+}
+transition 0RESCINDOFFER_e_revert1 {
+	in {
+		0RESCINDOFFER_PT1 : <(sp)>;
+	}
+	out {
+		ASSETTRANSFER_S : <(sp.state)>;
+	}
+}
+transition 0RESCINDOFFER_eD1 {
+	in {
+		BLOCK_PLACE : epsilon;
+	}
+	out {
+	}
+}
+transition 0RESCINDOFFER_tF1 {
+	in {
+		0RESCINDOFFER_INPUTV1 : <(sp)>;
+	}
+	out {
+		0RESCINDOFFER_EF1 : <(sp)>;
+	}
+	guard : not(((((((sp.state.State) != (sp.state.StateType.OfferPlaced)) and ((sp.state.State) != (sp.state.StateType.PendingInspection))) and ((sp.state.State) != (sp.state.StateType.Inspected))) and ((sp.state.State) != (sp.state.StateType.Appraised))) and ((sp.state.State) != (sp.state.StateType.NotionalAcceptance))) and ((sp.state.State) != (sp.state.StateType.SellerAccepted)));
+}
+transition 0RESCINDOFFER_tT2 {
+	in {
+		0RESCINDOFFER_EF1 : <(sp)>;
+	}
+	out {
+		0RESCINDOFFER_PT2 : <(sp)>;
+	}
+	guard : (sp.state.InstanceBuyer) != (sp.par.sender.adr);
+}
+transition 0RESCINDOFFER_e_revert2 {
+	in {
+		0RESCINDOFFER_PT2 : <(sp)>;
+	}
+	out {
+		ASSETTRANSFER_S : <(sp.state)>;
+	}
+}
+transition 0RESCINDOFFER_eD2 {
+	in {
+		BLOCK_PLACE : epsilon;
+	}
+	out {
+	}
+}
+transition 0RESCINDOFFER_tF2 {
+	in {
+		0RESCINDOFFER_EF1 : <(sp)>;
+	}
+	out {
+		0RESCINDOFFER_EF2 : <(sp)>;
+	}
+	guard : not((sp.state.InstanceBuyer) != (sp.par.sender.adr));
+}
+transition 0RESCINDOFFER_as1 {
+	in {
+		0RESCINDOFFER_EF2 : <(sp)>;
+	}
+	out {
+		0RESCINDOFFER_AS1 : <(sp_temp)>;
+	}
+	let {
+		ASSETTRANSFER_STATE state_temp := sp.state :: (InstanceBuyer := ADDRESS());
+		RESCINDOFFER_STATE sp_temp := sp :: (state := state_temp);
+	}
+}
+transition 0RESCINDOFFER_as2 {
+	in {
+		0RESCINDOFFER_AS1 : <(sp)>;
+	}
+	out {
+		0RESCINDOFFER_AS2 : <(sp_temp)>;
+	}
+	let {
+		ASSETTRANSFER_STATE state_temp := sp.state :: (OfferPrice := UINT());
+		RESCINDOFFER_STATE sp_temp := sp :: (state := state_temp);
+	}
+}
+transition 0RESCINDOFFER_as3 {
+	in {
+		0RESCINDOFFER_AS2 : <(sp)>;
+	}
+	out {
+		0RESCINDOFFER_AS3 : <(sp_temp)>;
+	}
+	let {
+		ASSETTRANSFER_STATE state_temp := sp.state :: (State := UINT(sp.state.StateType.Active));
+		RESCINDOFFER_STATE sp_temp := sp :: (state := state_temp);
+	}
+}
+transition RESCINDOFFER_endf {
+	in {
+		0RESCINDOFFER_AS3 : <(sp)>;
+	}
+	out {
+		ASSETTRANSFER_S : <(sp.state)>;
+	}
+}
+
+/*
+ * Function: MarkAppraised
+ */
+transition MARKAPPRAISED_InputD {
+	in {
+		ASSETTRANSFER_FUNCKEY : epsilon;
+		P_MARKAPPRAISED : <(p)>;
+		ASSETTRANSFER_S : <(s)>;
+	}
+	out {
+		0MARKAPPRAISED_INPUTV1 : <({s,p})>;
+		ASSETTRANSFER_FUNCKEY : epsilon;
+	}
+}
+transition 0MARKAPPRAISED_tT1 {
+	in {
+		0MARKAPPRAISED_INPUTV1 : <(sp)>;
+	}
+	out {
+		0MARKAPPRAISED_PT1 : <(sp)>;
+	}
+	guard : (sp.state.InstanceAppraiser) != (sp.par.sender.adr);
+}
+transition 0MARKAPPRAISED_e_revert1 {
+	in {
+		0MARKAPPRAISED_PT1 : <(sp)>;
+	}
+	out {
+		ASSETTRANSFER_S : <(sp.state)>;
+	}
+}
+transition 0MARKAPPRAISED_eD1 {
+	in {
+		BLOCK_PLACE : epsilon;
+	}
+	out {
+	}
+}
+transition 0MARKAPPRAISED_tF1 {
+	in {
+		0MARKAPPRAISED_INPUTV1 : <(sp)>;
+	}
+	out {
+		0MARKAPPRAISED_EF1 : <(sp)>;
+	}
+	guard : not((sp.state.InstanceAppraiser) != (sp.par.sender.adr));
+}
+transition 0MARKAPPRAISED_tT2 {
+	in {
+		0MARKAPPRAISED_EF1 : <(sp)>;
+	}
+	out {
+		0MARKAPPRAISED_PT2 : <(sp)>;
+	}
+	guard : (sp.state.State) = (sp.state.StateType.PendingInspection);
+}
+transition 0MARKAPPRAISED_as1 {
+	in {
+		0MARKAPPRAISED_PT2 : <(sp)>;
+	}
+	out {
+		0MARKAPPRAISED_AS1 : <(sp_temp)>;
+	}
+	let {
+		ASSETTRANSFER_STATE state_temp := sp.state :: (State := UINT(sp.state.StateType.Appraised));
+		MARKAPPRAISED_STATE sp_temp := sp :: (state := state_temp);
+	}
+}
+transition 0MARKAPPRAISED_eD2 {
+	in {
+		0MARKAPPRAISED_AS1 : <(sp)>;
+	}
+	out {
+		0MARKAPPRAISED_EF2 : <(sp)>;
+	}
+}
+transition 0MARKAPPRAISED_tF2 {
+	in {
+		0MARKAPPRAISED_EF1 : <(sp)>;
+	}
+	out {
+		0MARKAPPRAISED_PF2 : <(sp)>;
+	}
+	guard : not((sp.state.State) = (sp.state.StateType.PendingInspection));
+}
+transition 0MARKAPPRAISED_tT3 {
+	in {
+		0MARKAPPRAISED_PF2 : <(sp)>;
+	}
+	out {
+		0MARKAPPRAISED_PT3 : <(sp)>;
+	}
+	guard : (sp.state.State) = (sp.state.StateType.Inspected);
+}
+transition 0MARKAPPRAISED_as2 {
+	in {
+		0MARKAPPRAISED_PT3 : <(sp)>;
+	}
+	out {
+		0MARKAPPRAISED_AS2 : <(sp_temp)>;
+	}
+	let {
+		ASSETTRANSFER_STATE state_temp := sp.state :: (State := UINT(sp.state.StateType.NotionalAcceptance));
+		MARKAPPRAISED_STATE sp_temp := sp :: (state := state_temp);
+	}
+}
+transition 0MARKAPPRAISED_eD3 {
+	in {
+		0MARKAPPRAISED_AS2 : <(sp)>;
+	}
+	out {
+		0MARKAPPRAISED_EF2 : <(sp)>;
+	}
+}
+transition 0MARKAPPRAISED_tF3 {
+	in {
+		0MARKAPPRAISED_PF2 : <(sp)>;
+	}
+	out {
+		0MARKAPPRAISED_PF3 : <(sp)>;
+	}
+	guard : not((sp.state.State) = (sp.state.StateType.Inspected));
+}
+transition MARKAPPRAISED_endf {
+	in {
+		0MARKAPPRAISED_EF2 : <(sp)>;
+	}
+	out {
+		ASSETTRANSFER_S : <(sp.state)>;
+	}
+}
+
+/*
+ * Function: MarkInspected
+ */
+transition MARKINSPECTED_InputD {
+	in {
+		ASSETTRANSFER_FUNCKEY : epsilon;
+		P_MARKINSPECTED : <(p)>;
+		ASSETTRANSFER_S : <(s)>;
+	}
+	out {
+		0MARKINSPECTED_INPUTV1 : <({s,p})>;
+		ASSETTRANSFER_FUNCKEY : epsilon;
+	}
+}
+transition 0MARKINSPECTED_tT1 {
+	in {
+		0MARKINSPECTED_INPUTV1 : <(sp)>;
+	}
+	out {
+		0MARKINSPECTED_PT1 : <(sp)>;
+	}
+	guard : (sp.state.InstanceInspector) != (sp.par.sender.adr);
+}
+transition 0MARKINSPECTED_e_revert1 {
+	in {
+		0MARKINSPECTED_PT1 : <(sp)>;
+	}
+	out {
+		ASSETTRANSFER_S : <(sp.state)>;
+	}
+}
+transition 0MARKINSPECTED_eD1 {
+	in {
+		BLOCK_PLACE : epsilon;
+	}
+	out {
+	}
+}
+transition 0MARKINSPECTED_tF1 {
+	in {
+		0MARKINSPECTED_INPUTV1 : <(sp)>;
+	}
+	out {
+		0MARKINSPECTED_EF1 : <(sp)>;
+	}
+	guard : not((sp.state.InstanceInspector) != (sp.par.sender.adr));
+}
+transition 0MARKINSPECTED_tT2 {
+	in {
+		0MARKINSPECTED_EF1 : <(sp)>;
+	}
+	out {
+		0MARKINSPECTED_PT2 : <(sp)>;
+	}
+	guard : (sp.state.State) = (sp.state.StateType.PendingInspection);
+}
+transition 0MARKINSPECTED_as1 {
+	in {
+		0MARKINSPECTED_PT2 : <(sp)>;
+	}
+	out {
+		0MARKINSPECTED_AS1 : <(sp_temp)>;
+	}
+	let {
+		ASSETTRANSFER_STATE state_temp := sp.state :: (State := UINT(sp.state.StateType.Inspected));
+		MARKINSPECTED_STATE sp_temp := sp :: (state := state_temp);
+	}
+}
+transition 0MARKINSPECTED_eD2 {
+	in {
+		0MARKINSPECTED_AS1 : <(sp)>;
+	}
+	out {
+		0MARKINSPECTED_EF2 : <(sp)>;
+	}
+}
+transition 0MARKINSPECTED_tF2 {
+	in {
+		0MARKINSPECTED_EF1 : <(sp)>;
+	}
+	out {
+		0MARKINSPECTED_PF2 : <(sp)>;
+	}
+	guard : not((sp.state.State) = (sp.state.StateType.PendingInspection));
+}
+transition 0MARKINSPECTED_tT3 {
+	in {
+		0MARKINSPECTED_PF2 : <(sp)>;
+	}
+	out {
+		0MARKINSPECTED_PT3 : <(sp)>;
+	}
+	guard : (sp.state.State) = (sp.state.StateType.Appraised);
+}
+transition 0MARKINSPECTED_as2 {
+	in {
+		0MARKINSPECTED_PT3 : <(sp)>;
+	}
+	out {
+		0MARKINSPECTED_AS2 : <(sp_temp)>;
+	}
+	let {
+		ASSETTRANSFER_STATE state_temp := sp.state :: (State := UINT(sp.state.StateType.NotionalAcceptance));
+		MARKINSPECTED_STATE sp_temp := sp :: (state := state_temp);
+	}
+}
+transition 0MARKINSPECTED_eD3 {
+	in {
+		0MARKINSPECTED_AS2 : <(sp)>;
+	}
+	out {
+		0MARKINSPECTED_EF2 : <(sp)>;
+	}
+}
+transition 0MARKINSPECTED_tF3 {
+	in {
+		0MARKINSPECTED_PF2 : <(sp)>;
+	}
+	out {
+		0MARKINSPECTED_PF3 : <(sp)>;
+	}
+	guard : not((sp.state.State) = (sp.state.StateType.Appraised));
+}
+transition MARKINSPECTED_endf {
+	in {
+		0MARKINSPECTED_EF2 : <(sp)>;
+	}
+	out {
+		ASSETTRANSFER_S : <(sp.state)>;
+	}
+}
+
+}
