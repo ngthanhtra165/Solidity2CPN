@@ -1,0 +1,360 @@
+PROCEDURE GenerateCPNModel(SC)
+    Input: Solidity code is represented as an ASTNode
+    Output: Transformation model in the form of CPN for Smart Contracts
+    
+    globalState := []
+    metaColour := []
+
+    metaColour.addColor(globalState: SC.name+"_STATE")
+    metaColour.addColor("range 0 .. 1000": "ADDRESS")
+    metaColour.addColor("range 0 .. int'last": "UINT")
+    metaColour.addColor("struct {ADDRESS, UINT}": "USER")
+    
+    FOR decl IN SC.statements DO
+        IF decl IS VariableDeclaration THEN
+	    translateVariableDeclaration(decl)
+            IF decl.type IS GlobalVariable THEN
+                globalState.addStateColor(decl.type: decl.name)
+            END IF
+        END IF
+    END FOR
+
+    CREATE place SC_S With domain globalState represents the state of smart constract
+
+    FOR func IN SC.functions DO
+
+        CREATE transition net tn
+        tn.name := func.name
+        tn.body := func.body
+
+        tn.data := GenerateFunctionData(func)
+
+        IF func.type IS Constructor THEN
+            GenerateConstructor(tn)
+        ELSE
+            GenerateFunction(tn)
+        END IF
+    END FOR
+END PROCEDURE
+
+
+PROCEDURE GenerateFunctionData(func)
+    INPUT: smart constract function 
+    OUTPUT: set of color and place corresponding to function parameters and function state
+
+    CREATE StructColor scPar 
+    scPar.name := func.name + "_PAR"
+
+    scPar.addComponent("USER": "sender")
+    scPar.addComponent("UINT": "value")
+
+    FOR param IN func.params DO
+        scPar.addComponent(param.type: param.name)
+    END FOR
+
+    CREATE StructColor scState
+    scState.name := func.name + "_STATE"
+
+    scState.addComponent(metaColour.get(globalState).name: "state")
+    scState.addComponent(scPar.name: "par")
+
+    CREATE place fP WITH domain scPar represents the data input when calling the function
+
+    RETURN {scPar,scState,fP}
+END PROCEDURE
+
+
+
+PROCEDURE GenerateConstructor(tn)
+    INPUT: the transition net tn 
+    OUTPUT: CPN submodel corresponding to smartconstract constructor
+
+    CREATE place SC_SM WITH domain globalState AND init value to ensures that constructor submodel only run once
+
+    CreateSubmodel(tn.body, [SC_SM, tn.scPar])
+
+    CREATE transition end_func update SC_C place with the last control flow place in Submodel
+END PROCEDURE
+
+PROCEDURE GenerateFunction(tn)
+    INPUT: the transition net tn 
+    OUTPUT: CPN submodel corresponding to smartconstract function
+
+    CREATE place SC_SM WITH domain globalState AND init value to ensures that constructor submodel only run once
+
+    CreateSubmodel(tn.body, [SC_S, tn.scPar])
+
+    CREATE transition end_func update SC_C place with the last control flow place in Submodel
+END PROCEDURE
+
+
+
+
+PROCEDURE CreateSubmodel(block, Pin)
+    INPUT: list of statement block, input places Pin
+    OUTPUT: submodel of block
+
+    FOR st IN block DO
+        SWITCH st DO
+            CASE if statement
+                translateIfStatement(st,Pin)
+            CASE for statement
+                translateForStatement(st,Pin)
+	    Case while statement
+		translateWhileStatement(st,Pin)
+            CASE expression statement
+                translateExpressionStatement(st,Pin)
+            CASE variable declaration statement
+                translateVariableDeclarationStatement(st,Pin)
+        END SWITCH
+    END FOR  
+END PROCEDURE
+
+PROCEDURE translateExpressionStatement(st, Pin)
+    INPUT: statement st, input places Pin
+    OUTPUT: update Pin with the control flow place,and submodel for statement st
+
+    SWITCH st.expression AS exp DO
+        CASE function call
+            translateFunctionCall(exp,Pin)
+        CASE variable declaration statement
+            translateVariableDeclarationStatement(exp,Pin)
+        CASE assignment 
+            translateAssignment(exp,Pin)
+    END SWITCH
+END PROCEDURE
+
+
+PROCEDURE translateIfStatement(st, Pin)
+    INPUT: statement st, input place Pin
+    OUTPUT: update Pin with the control flow place,and submodel for statement st
+
+    CREATE place Pcf as constrol flow place
+    translateIfCondition(st, Pin, Pcf)
+    Pin := Pcf
+END PROCEDURE
+
+PROCEDURE translateIfCondition(st, Pin, Pend)
+    INPUT: statement st, input place Pin, end if place Pend
+    OUTPUT: update Pin with the control flow place,and submodel for statement st
+
+    CREATE transition ifstate handle true condition
+    CREATE transition not_ifstate handle false condition
+
+    ifstate.setGuard(st.condition)
+    not_ifstate.setGuard(not st.condition)
+
+    CREATE place Pcf_if as control flow place for true condition
+    GENERATE arc FROM Pcf_if as oarc_if
+    CREATE place Pcf_not_if as control flow place for false condition
+    GENERATE arc FROM Pcf_not_if as oarc_not_if
+
+    FOR p IN Pin DO
+        GENERATE arc FROM  p
+        ifstate.addInArc(arc)
+        not_ifstate.addInArc(arc)
+
+        IF p IS place for local variable THEN
+            ifstate.addOutArc(arc)
+            not_ifstate.addOutArc(arc)
+        END IF
+    END FOR
+
+    Pin := [Pcf_if]
+
+    GENERATE arc FROM Pend and false condition as arc_out_not_if
+
+    IF st.then NOT null THEN
+        SWITCH st.then as th DO
+            CASE block 
+                CreateSubmodel(th,Pin)
+            CASE expression statement
+                translateExpressionStatement(th,Pin)
+        END SWITCH
+    END IF
+
+    GENERATE arc FROM Pend and true condition as arc_out
+
+    CREATE transition end_if 
+    end_if.addOutArc(arc_out)
+    GENERATE arc FROM Pin as arc_in
+    end_if.addInArc(arc_in)
+
+    Pin := [Pcf_not_if]
+
+    IF st.else NOT null THEN
+        not_ifstate.addOutArc(oarc_not_if)
+
+        SWITCH st.else as el DO
+            CASE expression statement
+                translateExpressionStatement(el,Pin)
+            CASE if statement
+                translateIfcondition(el,Pin,Pend)
+        END SWITCH
+    ELSE THEN
+        not_ifstate.addOutArc(arc_out_not_if)
+    END IF
+END PROCEDURE
+
+PROCEDURE translateForStatement(st, Pin)
+    INPUT: a for looping statement st = for(init;c;inc), input places Pin
+    OUTPUT: update Pin with the control flow place,and submodel for statement st
+
+    CREATE place Pinit handle init value of for loop
+    CREATE place Pcf AS control flow place
+    CREATE transiton initLoop 
+
+    GENERATE arc FROM Pin as iarc_in
+    GENERATE arc FROM Pcf as oarc_flow
+
+    initLoop.addInArc(iarc_in)
+    initLoop.addOutArc(oarc_flow)
+
+    Pin := [Pcf]
+
+    GENERATE arc FROM as Pinit and st.init valueParamInt
+    initLoop.addOutArc(valueParamInt)
+
+    CREATE transition loopCondition handle true condition
+    CREATE transition loopNCondition handle false condition
+    loopCondition.setGuard(c)
+    loopNCondition.setGuard(not c)
+
+    CREATE place Pcf_s as control flow for true condition
+    CREATE place Pcf_f as control flow for false condition
+
+    ADD inArc, outArc to loopCondition, loopNCondition BASE ON Pin and place type
+
+    Pin := [Pcf_s]
+    SWITCH st.body as bd DO
+        CASE block 
+            CreateSubmodel(bd,Pin)
+        CASE expression statement
+            translateExpressionStatement(bd,Pin)
+    END SWITCH
+
+    CREATE transition inc handle the change in value of init value
+    GENEARATE arc FROM Pinit and st.increment as inc_arc
+    inc.addOutArc(inc_arc)
+
+    ADD inArc, outArc to inc BASE ON Pin and place type
+
+END PROCEDURE
+
+PROCEDURE translateVariableDeclarationStatement(st, Pin)
+    INPUT: statement st, input places Pin
+    OUTPUT: update Pin with the control flow place,and submodel for statement st
+
+    vardec_exp := convert st.value to string
+    CREATE transition vardec
+    CREATE place Pcf as control flow place
+    place color_place := GetLocalVariable(st.decl)
+    GENERATE arc FROM Pcf as oarc
+    GENERATE arc FROM color_place as decArc
+    decArc.setLabel(vardec_exp)
+    vardec.addOutArc(oarc)
+    vardec.addOutArc(decArc)
+    GENERATE arc FROM Pin as iarc
+    vardec.addInArc(iarc)
+    Pin := Pcf
+
+END PROCEDURE
+
+PROCEDURE GetLocalVariable(st)
+    INPUT: variable declaration st
+    OUTPUT: place corresponding to st
+
+    CREATE place Pa store the value of local variable
+    Pa.domain := st.type
+
+    return Pa
+END PROCEDURE
+
+PROCEDURE translateFunctionCall(st, Pin)
+    INPUT: statement st, input places Pin
+    OUTPUT: update Pin with the control flow place,and submodel for statement st
+
+    SWITCH st.calle as call DO
+        CASE identifier 
+            SWITCH call.name as name DO
+                CASE require
+                    translateRequireFunctionCall(st.argument,Pin)
+                CASE revert
+                    translateRevertFunctionCall(st,Pin)
+            END SWITCH
+        CASE member access 
+            SWITCH call.member as member DO
+                CASE transfer
+                    translateTransferFunctionCall(call.identifier,st.argument,Pin)
+                CASE push
+                    translatePushFunctionCall(call.identifier,st.argument,Pin)
+                DEFAULT
+                    IF call.identifier.name IS SmartContractOBJ THEN
+                        translateObjFunctionCall(call.identifier.name, member, st, Pin)
+                    END IF
+            END SWITCH 
+    END SWITCH
+END PROCEDURE
+
+PROCEDURE translateAssignment(st, Pin)
+    INPUT: statement st, input places Pin
+    OUTPUT: update Pin with the control flow place,and submodel for statement st
+
+    IF st.left IS SmartconstractObj THEN
+
+    ELSE
+        CREATE transition assign
+        let := convert st.right, st.operator, st.left to let of transition
+        assign.addLet(let)
+
+        CREATE place Pcf as a control flow place
+        
+        CREATE arc from Pin as inArc 
+        CREATE arc from Pcf and let as outArc 
+
+        assign.addInArc(inArc)
+        assign.addOutArc(outArc)
+
+        Pin := [Pcf]
+    END IF
+END PROCEDURE
+
+PROCEDURE translateVariableDeclaration(st)
+    INPUT: variable decalaration st
+    OUTPUT: color corresponding to variable
+
+    SWITCH st.type DO
+        CASE mapping
+	        CREATE ListColor Lcolor
+	        CREATE StructColor Scolor
+		    Scolor.name := "STRUCT_" + st.name
+		    Lcolor.name := "LIST_" + st.name
+		    Lcolor.indexType := "nat"
+		    Lcolor.elementType := Scolor.name
+		    Lcolor.capacity := 50
+		    Scolor.addComponent(st.key.type: st.key.name)
+		    Scolor.addComponent(st.value.value: st.value.name)
+		    ADD Lcolor and Scolor to metaColour
+        CASE array
+		    CREATE ListColor Lcolor
+		    Lcolor.name := "list_" + st.base.name
+		    Lcolor.indexType := "nat"
+		    Lcolor.elementType := st.base.type
+		    Lcolor.capacity := 50
+		    ADD Lcolor to metaColour
+        CASE struct
+        	CREATE StructColor Scolor
+		    Scolor.name := st.name
+		    FOR sfield IN st.fields DO
+			    Scolor.addComponent(sfield.type: sfield.name)
+		    END FOR
+		    ADD Scolor to metaColour
+        CASE enum
+        	CREATE StructColor Ecolor
+		    Ecolor.name := st.name
+		    FOR member IN st.members DO
+			    Ecolor.addComponent("UINT": member.name)
+		    END FOR
+		    ADD Ecolour to metaColour
+    END SWITCH
+END PROCEDURE
